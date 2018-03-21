@@ -16,7 +16,7 @@ def cal_density(adata, mapping='X_tsne'):
 
 
 def plot_density(adata,adata_full, mapping='X_tsne'):
-
+    import matplotlib.pyplot as pl
 
     from scipy.stats import gaussian_kde
     dens_name = mapping[2:] + '_density'
