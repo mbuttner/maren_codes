@@ -1,5 +1,5 @@
 def cal_density(adata, mapping='X_tsne'):
-
+    import numpy as np
     from scipy.stats import gaussian_kde
 
     x = adata.obsm[mapping][:,0]
