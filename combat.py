@@ -146,7 +146,7 @@ def combat(data, batch, model=None, numerical_covariates=None, data2=None, batch
     del s_data
     del tmp
     del B_hat
-    del model
+    #del model
     del temp
     #del grand_mean
     del t2
@@ -167,26 +167,27 @@ def combat(data, batch, model=None, numerical_covariates=None, data2=None, batch
     #online adaptation of a second dataframe
     if isinstance(data2, pd.DataFrame) and isinstance(batch2, pd.Series):
         #initialise variables
-        model = pd.DataFrame({'batch': batch2})
-        batch_items = model.groupby("batch").groups.items()
-        batch_levels = [k for k, v in batch_items]
-        batch_info = [v for k, v in batch_items]
-        n_batches = np.array([len(v) for v in batch_info])
+        model2 = pd.DataFrame({'batch': batch2})
+        batch_items2 = model2.groupby("batch").groups.items()
+        batch_levels2 = [k for k, v in batch_items2]
+        batch_info2 = [v for k, v in batch_items2]
+        which_batches2 = np.in1d(batch_levels, batch_levels2)
+        n_batches = np.array([len(v) for v in batch_info2])
         n_array = float(sum(n_batches))
-        idx = np.flatnonzero(n_batches==0) # get empty levels
-        non_idx =np.flatnonzero(n_batches>0)
+        idx = np.flatnonzero(np.invert(which_batches2)) # get empty levels
+        non_idx =np.flatnonzero(which_batches2)
         for j in reversed(idx):
             #print(j)
             del batch_info[j] #remove empty levels
             del batch_levels[j] #remove empty levels
-        n_batch = len(batch_info)
-        n_batches = n_batches[non_idx] #remove empty levels
+        #n_batch = len(batch_info2)
+        #n_batches = n_batches[non_idx] #remove empty levels
         # drop intercept and create design matrix
-        drop_cols = [cname for cname, inter in  ((model == 1).all()).iteritems() if inter == True]
+        drop_cols = [cname for cname, inter in  ((model2 == 1).all()).iteritems() if inter == True]
         drop_idxs = [list(model.columns).index(cdrop) for cdrop in drop_cols]
-        model = model[[c for c in model.columns if not c in drop_cols]]
+        model2 = model2[[c for c in model2.columns if not c in drop_cols]]
         numerical_covariates = []
-        design = design_mat(model, numerical_covariates, batch_levels)
+        design = design_mat(model2, numerical_covariates, batch_levels2)
         batch_design = design[design.columns[:n_batch]]
         
         #pre-process data
@@ -201,7 +202,7 @@ def combat(data, batch, model=None, numerical_covariates=None, data2=None, batch
         new_bayes = s_data
         #correct data
         sys.stdout.write("Adjusting additional data\n")
-        for j, batch_idxs in enumerate(batch_info):
+        for j, batch_idxs in enumerate(batch_info2):
             
             dsq = np.sqrt(delta_star_sub[j,:])
             dsq = dsq.reshape((len(dsq), 1))

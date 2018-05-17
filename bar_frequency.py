@@ -3,6 +3,9 @@ import patsy
 import sys
 import numpy.linalg as la
 import numpy as np
+import scipy as sci
+from matplotlib import rcParams
+import matplotlib.pyplot as pl
 
 def round_sig(x, sig=2, small_value=1.0e-100):
     expo = int(np.floor(np.log10(max(abs(x), abs(small_value)))))
@@ -10,16 +13,16 @@ def round_sig(x, sig=2, small_value=1.0e-100):
         
     return(base, expo)
 
-def bar_frequency(adata=None,cluster='louvain_groups', group=None,celltype1=None,celltype2=None):
+def bar_frequency(adata=None,cluster='louvain', group=None,celltype1=None,celltype2=None):
     
 
 
-    sub_cells = np.in1d(adata.smp[group], [celltype1])
+    sub_cells = np.in1d(adata.obs[group], [celltype1])
     print(celltype1)
     print(np.sum(sub_cells))
     adata_filt=adata[sub_cells,:]
-    data = adata_filt.smp[cluster]
-    group_names=np.unique(adata.smp[cluster])
+    data = adata_filt.obs[cluster]
+    group_names=np.unique(adata.obs[cluster])
     counts_control = pd.value_counts(data,normalize=True)
     counts_control = counts_control[group_names]
     counts_control[np.isnan(counts_control)] = 0
@@ -29,11 +32,11 @@ def bar_frequency(adata=None,cluster='louvain_groups', group=None,celltype1=None
     
     n_groups = len(group_names)
 
-    sub_cells = np.in1d(adata.smp[group], [celltype2])
+    sub_cells = np.in1d(adata.obs[group], [celltype2])
     print(celltype2)
     print(np.sum(sub_cells))
     adata_filt=adata[sub_cells,:]
-    data = adata_filt.smp[cluster]
+    data = adata_filt.obs[cluster]
     counts_enriched = pd.value_counts(data,normalize=True)
     counts_enriched = counts_enriched[group_names]
     counts_enriched[np.isnan(counts_enriched)] = 0
