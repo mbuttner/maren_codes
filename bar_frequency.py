@@ -13,7 +13,7 @@ def round_sig(x, sig=2, small_value=1.0e-100):
         
     return(base, expo)
 
-def bar_frequency(adata=None,cluster='louvain', group=None,celltype1=None,celltype2=None):
+def bar_frequency(adata=None,cluster='louvain', group=None,celltype1=None,celltype2=None, do_test=False):
     
 
 
@@ -51,8 +51,11 @@ def bar_frequency(adata=None,cluster='louvain', group=None,celltype1=None,cellty
         non_c_control = counts_control2[np.arange(n_groups)!=x].sum()
         testmat = np.array([[counts_control2[x], non_c_control],[counts_enriched2[x], non_c_enriched]], dtype=int)
         p_val[x]=min(1, sci.stats.fisher_exact(testmat, alternative='two-sided')[1]* n_groups) #Bonferroni correction
-    
-    res_order = np.argsort(p_val)
+    if do_test:
+        res_order = np.argsort(p_val)
+
+    else:
+        res_order =np.arange(n_groups)
     #print(counts_control[res_order])
     #print(counts_enriched[res_order])
     #print(res_order)
