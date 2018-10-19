@@ -3,6 +3,7 @@
 def genes_to_xls(adata=None, filename='genes_hvg_regressed.xlsx', key='rank_genes_groups'):
     import xlsxwriter
     import pandas as pd
+    filename = filename.replace('/','_')
     writer = pd.ExcelWriter(filename, engine='xlsxwriter')
     for i in adata.uns[key]['names'].dtype.names:
         d = {'gene':adata.uns[key]['names'][i],
