@@ -109,7 +109,10 @@ def combat(data, batch, model=None, numerical_covariates=None, data2=None, batch
     sys.stderr.write("Fitting L/S model and finding priors\n")
     batch_design = design[design.columns[:n_batch]]
     gamma_hat = np.dot(np.dot(la.inv(np.dot(batch_design.T, batch_design)), batch_design.T), s_data.T)
-                            
+    
+    #rescue zero values
+    gamma_hat[np.isnan(gamma_hat)]=0
+    
     delta_hat = []
                             
     for i, batch_idxs in enumerate(batch_info):
